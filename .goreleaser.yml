@@ -1,0 +1,45 @@
+version: 2
+before:
+  hooks:
+    - go mod tidy
+    - make test
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    binary: 'foo-lorem-v{{ .Version }}-{{ .Os }}-{{ .Arch }}'
+
+archives:
+  - format: tar.gz
+    name_template: 'foo-lorem-v{{ .Version }}-{{ .Os }}-{{ .Arch }}'
+    format_overrides:
+      - goos: windows
+        format: zip
+    wrap_in_directory: false
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+
+nfpms:
+  - vendor: Edson Michaque
+    maintainer: Edson Michaque
+    description: |-
+      A dashboard plugin
+    formats:
+      - deb
+      - rpm
+      - apk
+      - archlinux
+    bindir: /usr/bin
